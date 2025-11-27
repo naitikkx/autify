@@ -1,7 +1,8 @@
 // Spotify Auth Configuration
 // Note: In a real app, these should be in environment variables
 const CLIENT_ID = '111584c3d9574599bfefa747b25d317c'; // Provided by user
-const REDIRECT_URI = 'http://localhost:5173/';
+// Dynamically determine redirect URI based on current environment
+const REDIRECT_URI = window.location.origin + '/';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 const SCOPES = [

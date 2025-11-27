@@ -1,0 +1,99 @@
+:root {
+  /* Colors */
+  --color-background: #121212;
+  --color-surface-1: #1E1E1E;
+  --color-surface-2: #2C2C2C;
+
+  /* New Palette */
+  --color-accent-orange: #FF6D00;
+  --color-accent-pink: #FF4081;
+  --color-accent-purple: #7C4DFF;
+  --color-login-purple: #8C67F6;
+  /* Specific purple from login design */
+
+  /* Semantic Accents */
+  --color-accent: #FF4081;
+  /* Default to Pink for solid single-color needs */
+  --color-accent-gradient: linear-gradient(135deg, #FF6D00, #FF4081, #7C4DFF);
+
+  --color-success: #1DB954;
+  /* Keep success green or maybe switch to purple? Keeping green for standard success semantics */
+  --color-error: #E24C4C;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B3B3B3;
+
+  /* Spacing */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+
+  /* Borders */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  /* No outer scroll */
+}
+
+/* Scrollbar styling for internal panels */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}
+
+/* Utility classes */
+.h1 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.h3 {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.body-text {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.small-text {
+  font-size: 12px;
+  font-weight: 400;
+}

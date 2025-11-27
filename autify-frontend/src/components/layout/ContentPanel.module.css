@@ -1,0 +1,60 @@
+.contentPanel {
+    flex: 1;
+    background-color: var(--color-background);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tabsContainer {
+    display: flex;
+    padding: 0 var(--spacing-lg);
+    border-bottom: 1px solid var(--color-surface-2);
+    background-color: var(--color-background);
+    /* Or maybe transparent if header needs to be distinct */
+    padding-top: var(--spacing-md);
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+}
+
+.tab:hover {
+    color: var(--color-text-primary);
+}
+
+.activeTab {
+    color: var(--color-text-primary);
+}
+
+.activeTab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    /* Overlap border */
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--color-accent-gradient);
+}
+
+.viewContainer {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-lg);
+}
+
+.placeholder {
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-top: 40px;
+}

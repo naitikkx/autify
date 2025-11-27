@@ -12,6 +12,12 @@ export interface Playlist {
     name: string;
     images: { url: string }[];
     owner: { display_name: string };
+    description?: string;
+    tracks?: { total: number };
+}
+
+export interface PlaylistDetails extends Playlist {
+    followers: { total: number };
 }
 
 export interface Track {
@@ -38,6 +44,14 @@ export const fetchUserPlaylists = async (token: string): Promise<Playlist[]> => 
     if (!response.ok) throw new Error('Failed to fetch playlists');
     const data = await response.json();
     return data.items;
+};
+
+export const fetchPlaylistDetails = async (token: string, playlistId: string): Promise<PlaylistDetails> => {
+    const response = await fetch(`${BASE_URL}/playlists/${playlistId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error('Failed to fetch playlist details');
+    return response.json();
 };
 
 export const fetchPlaylistTracks = async (token: string, playlistId: string): Promise<Track[]> => {

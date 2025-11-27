@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Clock, Music, Calendar } from 'lucide-react';
+import { Clock, Music, Calendar, User } from 'lucide-react';
 import styles from './PlaylistView.module.css';
-import { fetchPlaylistTracks } from '../../api/spotify';
-import type { Track } from '../../api/spotify';
+import { fetchPlaylistTracks, fetchPlaylistDetails } from '../../api/spotify';
+import type { Track, PlaylistDetails } from '../../api/spotify';
 
 interface PlaylistViewProps {
     playlistId: string | null;
@@ -11,22 +11,27 @@ interface PlaylistViewProps {
 
 export const PlaylistView: React.FC<PlaylistViewProps> = ({ playlistId, token }) => {
     const [tracks, setTracks] = useState<Track[]>([]);
+    const [playlist, setPlaylist] = useState<PlaylistDetails | null>(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (playlistId && token) {
-            const loadTracks = async () => {
+            const loadData = async () => {
                 setLoading(true);
                 try {
-                    const data = await fetchPlaylistTracks(token, playlistId);
-                    setTracks(data);
+                    const [tracksData, playlistData] = await Promise.all([
+                        fetchPlaylistTracks(token, playlistId),
+                        fetchPlaylistDetails(token, playlistId)
+                    ]);
+                    setTracks(tracksData);
+                    setPlaylist(playlistData);
                 } catch (error) {
-                    console.error("Failed to fetch tracks", error);
+                    console.error("Failed to fetch playlist data", error);
                 } finally {
                     setLoading(false);
                 }
             };
-            loadTracks();
+            loadData();
         }
     }, [playlistId, token]);
 
@@ -45,11 +50,40 @@ export const PlaylistView: React.FC<PlaylistViewProps> = ({ playlistId, token })
     }
 
     if (loading) {
-        return <div className={styles.loadingState}>Loading tracks...</div>;
+        return <div className={styles.loadingState}>Loading playlist...</div>;
     }
 
     return (
         <div className={styles.container}>
+            {playlist && (
+                <div className={styles.header}>
+                    <div className={styles.headerImageContainer}>
+                        {playlist.images?.[0]?.url ? (
+                            <img src={playlist.images[0].url} alt={playlist.name} className={styles.headerImage} />
+                        ) : (
+                            <div className={styles.headerImagePlaceholder}>
+                                <Music size={64} />
+                            </div>
+                        )}
+                    </div>
+                    <div className={styles.headerInfo}>
+                        <span className={styles.headerLabel}>Playlist</span>
+                        <h1 className={styles.headerTitle}>{playlist.name}</h1>
+                        <p className={styles.headerDescription}>{playlist.description}</p>
+                        <div className={styles.headerMeta}>
+                            <div className={styles.ownerInfo}>
+                                <User size={16} />
+                                <span className={styles.ownerName}>{playlist.owner.display_name}</span>
+                            </div>
+                            <span className={styles.metaSeparator}>•</span>
+                            <span>{playlist.followers.total.toLocaleString()} likes</span>
+                            <span className={styles.metaSeparator}>•</span>
+                            <span>{playlist.tracks?.total} songs</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <table className={styles.table}>
                 <thead>
                     <tr>

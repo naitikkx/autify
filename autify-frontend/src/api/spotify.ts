@@ -1,0 +1,53 @@
+const BASE_URL = 'https://api.spotify.com/v1';
+
+export interface UserProfile {
+    id: string;
+    display_name: string;
+    email: string;
+    images: { url: string; height: number; width: number }[];
+}
+
+export interface Playlist {
+    id: string;
+    name: string;
+    images: { url: string }[];
+    owner: { display_name: string };
+}
+
+export interface Track {
+    id: string;
+    name: string;
+    artists: { name: string }[];
+    album: { name: string; images: { url: string }[] };
+    duration_ms: number;
+    added_at: string; // From playlist track object
+}
+
+export const fetchUserProfile = async (token: string): Promise<UserProfile> => {
+    const response = await fetch(`${BASE_URL}/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error('Failed to fetch profile');
+    return response.json();
+};
+
+export const fetchUserPlaylists = async (token: string): Promise<Playlist[]> => {
+    const response = await fetch(`${BASE_URL}/me/playlists`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error('Failed to fetch playlists');
+    const data = await response.json();
+    return data.items;
+};
+
+export const fetchPlaylistTracks = async (token: string, playlistId: string): Promise<Track[]> => {
+    const response = await fetch(`${BASE_URL}/playlists/${playlistId}/tracks`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error('Failed to fetch tracks');
+    const data = await response.json();
+    return data.items.map((item: any) => ({
+        ...item.track,
+        added_at: item.added_at,
+    }));
+};

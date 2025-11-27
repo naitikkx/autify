@@ -37,7 +37,12 @@
 .headerInfo {
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     gap: 8px;
+    flex: 1;
+    min-width: 0;
+    /* Prevents flex item from overflowing */
+    z-index: 1;
 }
 
 .headerLabel {
@@ -48,13 +53,21 @@
 }
 
 .headerTitle {
-    font-size: 72px;
-    /* Large Spotify-like title */
+    font-size: clamp(32px, 5vw, 72px);
+    /* Responsive font size */
     font-weight: 900;
     color: white;
     margin: 0;
-    line-height: 1;
+    line-height: 1.1;
     letter-spacing: -0.04em;
+    word-wrap: break-word;
+    /* Ensure long words break */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    /* Limit to 3 lines */
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .headerDescription {

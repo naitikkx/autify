@@ -1,5 +1,5 @@
 import React from 'react';
-import { Music, Disc, ListMusic, LogOut } from 'lucide-react';
+import { Music, Disc, ListMusic, LogOut, Pin } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import type { UserProfile, Playlist } from '../../api/spotify';
 
@@ -18,6 +18,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onSelectPlaylist,
     onLogout
 }) => {
+    const [pinnedPlaylistIds, setPinnedPlaylistIds] = React.useState<string[]>([]);
+
+    const togglePin = (e: React.MouseEvent, playlistId: string) => {
+        e.stopPropagation();
+        setPinnedPlaylistIds(prev =>
+            prev.includes(playlistId)
+                ? prev.filter(id => id !== playlistId)
+                : [...prev, playlistId]
+        );
+    };
+
+    const pinnedPlaylists = playlists.filter(p => pinnedPlaylistIds.includes(p.id));
+
     return (
         <aside className={styles.sidebar}>
             <div className={styles.header}>
@@ -27,17 +40,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             <div className={styles.section}>
                 <h3 className={styles.sectionHeader}>PINNED</h3>
-                <div className={styles.item}>
-                    <Disc size={18} />
-                    <span>Summer Vibes '25</span>
-                </div>
-                <div className={styles.item}>
-                    <ListMusic size={18} />
-                    <span>Gym Motivation</span>
-                </div>
+                {pinnedPlaylists.length === 0 && (
+                    <div className={styles.emptyPinned}>
+                        <span>Pin your favorite playlists</span>
+                    </div>
+                )}
+                {pinnedPlaylists.map(playlist => (
+                    <div
+                        key={`pinned-${playlist.id}`}
+                        className={`${styles.item} ${selectedPlaylistId === playlist.id ? styles.active : ''}`}
+                        onClick={() => onSelectPlaylist(playlist.id)}
+                    >
+                        <Disc size={18} />
+                        <span className={styles.playlistName}>{playlist.name}</span>
+                        <button
+                            className={styles.pinBtn}
+                            onClick={(e) => togglePin(e, playlist.id)}
+                        >
+                            <Pin size={14} fill="currentColor" />
+                        </button>
+                    </div>
+                ))}
             </div>
 
-            <div className={styles.section}>
+            <div className={`${styles.section} ${styles.allPlaylistsSection}`}>
                 <h3 className={styles.sectionHeader}>ALL PLAYLISTS</h3>
                 <div className={styles.scrollableList}>
                     {playlists.map((playlist) => (
@@ -48,6 +74,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         >
                             <ListMusic size={18} />
                             <span className={styles.playlistName}>{playlist.name}</span>
+                            <button
+                                className={`${styles.pinBtn} ${pinnedPlaylistIds.includes(playlist.id) ? styles.pinned : ''}`}
+                                onClick={(e) => togglePin(e, playlist.id)}
+                            >
+                                <Pin size={14} fill={pinnedPlaylistIds.includes(playlist.id) ? "currentColor" : "none"} />
+                            </button>
                         </div>
                     ))}
                     {playlists.length === 0 && (
@@ -57,8 +89,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     )}
                 </div>
             </div>
-
-            <div className={styles.spacer} />
 
             {user && (
                 <div className={styles.profileFooter}>

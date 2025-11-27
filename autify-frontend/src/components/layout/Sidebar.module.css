@@ -66,6 +66,13 @@
     position: relative;
 }
 
+.playlistThumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
 .item:hover {
     color: var(--color-text-primary);
     background-color: rgba(255, 255, 255, 0.05);

@@ -18,15 +18,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onSelectPlaylist,
     onLogout
 }) => {
-    const [pinnedPlaylistIds, setPinnedPlaylistIds] = React.useState<string[]>([]);
+    const [pinnedPlaylistIds, setPinnedPlaylistIds] = React.useState<string[]>(() => {
+        const saved = localStorage.getItem('pinnedPlaylists');
+        return saved ? JSON.parse(saved) : [];
+    });
 
     const togglePin = (e: React.MouseEvent, playlistId: string) => {
         e.stopPropagation();
-        setPinnedPlaylistIds(prev =>
-            prev.includes(playlistId)
+        setPinnedPlaylistIds(prev => {
+            const newPinned = prev.includes(playlistId)
                 ? prev.filter(id => id !== playlistId)
-                : [...prev, playlistId]
-        );
+                : [...prev, playlistId];
+            localStorage.setItem('pinnedPlaylists', JSON.stringify(newPinned));
+            return newPinned;
+        });
     };
 
     const pinnedPlaylists = playlists.filter(p => pinnedPlaylistIds.includes(p.id));
@@ -51,7 +56,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         className={`${styles.item} ${selectedPlaylistId === playlist.id ? styles.active : ''}`}
                         onClick={() => onSelectPlaylist(playlist.id)}
                     >
-                        <Disc size={18} />
+                        {playlist.images?.[0]?.url ? (
+                            <img src={playlist.images[0].url} alt={playlist.name} className={styles.playlistThumb} />
+                        ) : (
+                            <Disc size={18} />
+                        )}
                         <span className={styles.playlistName}>{playlist.name}</span>
                         <button
                             className={styles.pinBtn}
@@ -72,7 +81,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             className={`${styles.item} ${selectedPlaylistId === playlist.id ? styles.active : ''}`}
                             onClick={() => onSelectPlaylist(playlist.id)}
                         >
-                            <ListMusic size={18} />
+                            {playlist.images?.[0]?.url ? (
+                                <img src={playlist.images[0].url} alt={playlist.name} className={styles.playlistThumb} />
+                            ) : (
+                                <ListMusic size={18} />
+                            )}
                             <span className={styles.playlistName}>{playlist.name}</span>
                             <button
                                 className={`${styles.pinBtn} ${pinnedPlaylistIds.includes(playlist.id) ? styles.pinned : ''}`}

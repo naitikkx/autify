@@ -38,12 +38,20 @@ export const fetchUserProfile = async (token: string): Promise<UserProfile> => {
 };
 
 export const fetchUserPlaylists = async (token: string): Promise<Playlist[]> => {
-    const response = await fetch(`${BASE_URL}/me/playlists`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!response.ok) throw new Error('Failed to fetch playlists');
-    const data = await response.json();
-    return data.items;
+    let allPlaylists: Playlist[] = [];
+    let nextUrl: string | null = `${BASE_URL}/me/playlists?limit=50`;
+
+    while (nextUrl) {
+        const response = await fetch(nextUrl, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error('Failed to fetch playlists');
+        const data = await response.json();
+        allPlaylists = [...allPlaylists, ...data.items];
+        nextUrl = data.next;
+    }
+
+    return allPlaylists;
 };
 
 export const fetchPlaylistDetails = async (token: string, playlistId: string): Promise<PlaylistDetails> => {

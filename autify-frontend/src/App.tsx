@@ -12,6 +12,7 @@ function App() {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -40,6 +41,9 @@ function App() {
           const userPlaylists = await fetchUserPlaylists(token);
           setUser(profile);
           setPlaylists(userPlaylists);
+          if (userPlaylists.length > 0) {
+            setSelectedPlaylistId(userPlaylists[0].id);
+          }
         } catch (error) {
           console.error("Failed to load user data", error);
         }
@@ -71,7 +75,10 @@ function App() {
     <MainLayout
       user={user}
       playlists={playlists}
+      selectedPlaylistId={selectedPlaylistId}
+      onSelectPlaylist={setSelectedPlaylistId}
       onLogout={handleLogout}
+      token={token}
     />
   );
 }

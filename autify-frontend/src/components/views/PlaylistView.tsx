@@ -1,26 +1,53 @@
-import React from 'react';
-import { Clock, User } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Clock, Music, Calendar } from 'lucide-react';
 import styles from './PlaylistView.module.css';
+import { fetchPlaylistTracks } from '../../api/spotify';
+import type { Track } from '../../api/spotify';
 
-interface Song {
-    id: string;
-    title: string;
-    artist: string;
-    dateAdded: string;
-    addedBy: string;
-    duration: string;
-    coverUrl?: string;
+interface PlaylistViewProps {
+    playlistId: string | null;
+    token: string | null;
 }
 
-const MOCK_DATA: Song[] = [
-    { id: '1', title: 'Blinding Lights', artist: 'The Weeknd', dateAdded: '2 days ago', addedBy: 'You', duration: '3:20' },
-    { id: '2', title: 'As It Was', artist: 'Harry Styles', dateAdded: '3 days ago', addedBy: 'Gemini', duration: '2:47' },
-    { id: '3', title: 'Levitating', artist: 'Dua Lipa', dateAdded: '1 week ago', addedBy: 'You', duration: '3:23' },
-    { id: '4', title: 'Stay', artist: 'The Kid LAROI, Justin Bieber', dateAdded: '1 week ago', addedBy: 'Gemini', duration: '2:21' },
-    { id: '5', title: 'Heat Waves', artist: 'Glass Animals', dateAdded: '2 weeks ago', addedBy: 'You', duration: '3:58' },
-];
+export const PlaylistView: React.FC<PlaylistViewProps> = ({ playlistId, token }) => {
+    const [tracks, setTracks] = useState<Track[]>([]);
+    const [loading, setLoading] = useState(false);
 
-export const PlaylistView: React.FC = () => {
+    useEffect(() => {
+        if (playlistId && token) {
+            const loadTracks = async () => {
+                setLoading(true);
+                try {
+                    const data = await fetchPlaylistTracks(token, playlistId);
+                    setTracks(data);
+                } catch (error) {
+                    console.error("Failed to fetch tracks", error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            loadTracks();
+        }
+    }, [playlistId, token]);
+
+    const formatDuration = (ms: number) => {
+        const minutes = Math.floor(ms / 60000);
+        const seconds = ((ms % 60000) / 1000).toFixed(0);
+        return `${minutes}:${Number(seconds) < 10 ? '0' : ''}${seconds}`;
+    };
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString();
+    };
+
+    if (!playlistId) {
+        return <div className={styles.emptyState}>Select a playlist to view tracks</div>;
+    }
+
+    if (loading) {
+        return <div className={styles.loadingState}>Loading tracks...</div>;
+    }
+
     return (
         <div className={styles.container}>
             <table className={styles.table}>
@@ -28,31 +55,31 @@ export const PlaylistView: React.FC = () => {
                     <tr>
                         <th className={styles.th}>#</th>
                         <th className={styles.th}>Title</th>
-                        <th className={styles.th}>Artist</th>
-                        <th className={styles.th}>Date Added</th>
-                        <th className={styles.th}>Added By</th>
+                        <th className={styles.th}>Album</th>
+                        <th className={styles.th}><Calendar size={16} /></th>
                         <th className={styles.th}><Clock size={16} /></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {MOCK_DATA.map((song, index) => (
-                        <tr key={song.id} className={styles.tr}>
+                    {tracks.map((track, index) => (
+                        <tr key={`${track.id}-${index}`} className={styles.row}>
                             <td className={styles.tdIndex}>{index + 1}</td>
                             <td className={styles.tdTitle}>
-                                <div className={styles.titleContent}>
-                                    <div className={styles.coverPlaceholder} />
-                                    <span>{song.title}</span>
+                                <div className={styles.songInfo}>
+                                    {track.album.images[0] ? (
+                                        <img src={track.album.images[0].url} alt={track.album.name} className={styles.albumArt} />
+                                    ) : (
+                                        <div className={styles.albumPlaceholder}><Music size={16} /></div>
+                                    )}
+                                    <div className={styles.textInfo}>
+                                        <span className={styles.songName}>{track.name}</span>
+                                        <span className={styles.artistName}>{track.artists.map(a => a.name).join(', ')}</span>
+                                    </div>
                                 </div>
                             </td>
-                            <td className={styles.td}>{song.artist}</td>
-                            <td className={styles.td}>{song.dateAdded}</td>
-                            <td className={styles.td}>
-                                <div className={styles.addedBy}>
-                                    <User size={14} />
-                                    {song.addedBy}
-                                </div>
-                            </td>
-                            <td className={styles.td}>{song.duration}</td>
+                            <td className={styles.tdAlbum}>{track.album.name}</td>
+                            <td className={styles.tdDate}>{formatDate(track.added_at)}</td>
+                            <td className={styles.tdDuration}>{formatDuration(track.duration_ms)}</td>
                         </tr>
                     ))}
                 </tbody>

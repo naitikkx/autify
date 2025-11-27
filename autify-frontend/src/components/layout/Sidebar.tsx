@@ -6,10 +6,18 @@ import type { UserProfile, Playlist } from '../../api/spotify';
 interface SidebarProps {
     user: UserProfile | null;
     playlists: Playlist[];
+    selectedPlaylistId: string | null;
+    onSelectPlaylist: (id: string) => void;
     onLogout: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ user, playlists, onLogout }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+    user,
+    playlists,
+    selectedPlaylistId,
+    onSelectPlaylist,
+    onLogout
+}) => {
     return (
         <aside className={styles.sidebar}>
             <div className={styles.header}>
@@ -19,7 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, playlists, onLogout }) =
 
             <div className={styles.section}>
                 <h3 className={styles.sectionHeader}>PINNED</h3>
-                <div className={`${styles.item} ${styles.active}`}>
+                <div className={styles.item}>
                     <Disc size={18} />
                     <span>Summer Vibes '25</span>
                 </div>
@@ -33,7 +41,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, playlists, onLogout }) =
                 <h3 className={styles.sectionHeader}>ALL PLAYLISTS</h3>
                 <div className={styles.scrollableList}>
                     {playlists.map((playlist) => (
-                        <div key={playlist.id} className={styles.item}>
+                        <div
+                            key={playlist.id}
+                            className={`${styles.item} ${selectedPlaylistId === playlist.id ? styles.active : ''}`}
+                            onClick={() => onSelectPlaylist(playlist.id)}
+                        >
                             <ListMusic size={18} />
                             <span className={styles.playlistName}>{playlist.name}</span>
                         </div>

@@ -8,6 +8,21 @@
     text-align: left;
 }
 
+.tdDuration {
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+.emptyState,
+.loadingState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-text-secondary);
+    font-size: 16px;
+}
+
 .th {
     padding: var(--spacing-md);
     color: var(--color-text-secondary);

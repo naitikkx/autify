@@ -6,7 +6,12 @@ import styles from './ContentPanel.module.css';
 
 type Tab = 'playlist' | 'history' | 'growth';
 
-export const ContentPanel: React.FC = () => {
+interface ContentPanelProps {
+    selectedPlaylistId: string | null;
+    token: string | null;
+}
+
+export const ContentPanel: React.FC<ContentPanelProps> = ({ selectedPlaylistId, token }) => {
     const [activeTab, setActiveTab] = useState<Tab>('playlist');
 
     return (
@@ -33,7 +38,12 @@ export const ContentPanel: React.FC = () => {
             </div>
 
             <div className={styles.viewContainer}>
-                {activeTab === 'playlist' && <PlaylistView />}
+                {activeTab === 'playlist' && (
+                    <PlaylistView
+                        playlistId={selectedPlaylistId}
+                        token={token}
+                    />
+                )}
                 {activeTab === 'history' && <HistoryView />}
                 {activeTab === 'growth' && <GrowthView />}
             </div>

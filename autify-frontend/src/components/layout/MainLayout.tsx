@@ -8,14 +8,33 @@ import type { UserProfile, Playlist } from '../../api/spotify';
 interface MainLayoutProps {
     user: UserProfile | null;
     playlists: Playlist[];
+    selectedPlaylistId: string | null;
+    onSelectPlaylist: (id: string) => void;
     onLogout: () => void;
+    token: string | null;
 }
 
-export const MainLayout: React.FC<MainLayoutProps> = ({ user, playlists, onLogout }) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({
+    user,
+    playlists,
+    selectedPlaylistId,
+    onSelectPlaylist,
+    onLogout,
+    token
+}) => {
     return (
         <div className={styles.container}>
-            <Sidebar user={user} playlists={playlists} onLogout={onLogout} />
-            <ContentPanel />
+            <Sidebar
+                user={user}
+                playlists={playlists}
+                selectedPlaylistId={selectedPlaylistId}
+                onSelectPlaylist={onSelectPlaylist}
+                onLogout={onLogout}
+            />
+            <ContentPanel
+                selectedPlaylistId={selectedPlaylistId}
+                token={token}
+            />
             <ChatPanel />
         </div>
     );

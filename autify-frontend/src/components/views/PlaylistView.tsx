@@ -100,18 +100,18 @@ export const PlaylistView: React.FC<PlaylistViewProps> = ({ playlistId, token })
                             <td className={styles.tdIndex}>{index + 1}</td>
                             <td className={styles.tdTitle}>
                                 <div className={styles.songInfo}>
-                                    {track.album.images[0] ? (
-                                        <img src={track.album.images[0].url} alt={track.album.name} className={styles.albumArt} />
+                                    {track.album?.images?.[0] ? (
+                                        <img src={track.album.images[0].url} alt={track.album.name || 'Album Art'} className={styles.albumArt} />
                                     ) : (
                                         <div className={styles.albumPlaceholder}><Music size={16} /></div>
                                     )}
                                     <div className={styles.textInfo}>
                                         <span className={styles.songName}>{track.name}</span>
-                                        <span className={styles.artistName}>{track.artists.map(a => a.name).join(', ')}</span>
+                                        <span className={styles.artistName}>{track.artists?.map(a => a.name).join(', ') || 'Unknown Artist'}</span>
                                     </div>
                                 </div>
                             </td>
-                            <td className={styles.tdAlbum}>{track.album.name}</td>
+                            <td className={styles.tdAlbum}>{track.album?.name || 'Unknown Album'}</td>
                             <td className={styles.tdDate}>{formatDate(track.added_at)}</td>
                             <td className={styles.tdDuration}>{formatDuration(track.duration_ms)}</td>
                         </tr>

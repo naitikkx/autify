@@ -68,8 +68,11 @@ export const fetchPlaylistTracks = async (token: string, playlistId: string): Pr
     });
     if (!response.ok) throw new Error('Failed to fetch tracks');
     const data = await response.json();
-    return data.items.map((item: any) => ({
-        ...item.track,
-        added_at: item.added_at,
-    }));
+
+    return data.items
+        .filter((item: any) => item.track)
+        .map((item: any) => ({
+            ...item.track,
+            added_at: item.added_at,
+        }));
 };
